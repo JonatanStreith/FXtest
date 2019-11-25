@@ -34,7 +34,7 @@ public class App extends Application
         openValue = 15;
         gameTitle = "The Amazing Race!";
         System.out.print("Message: ");
-        logo = inputReader.nextLine();
+        //logo = inputReader.nextLine();
 
     }
 
@@ -63,10 +63,10 @@ public class App extends Application
         gc.setLineWidth(2);
         Font theFont = Font.font( "Times New Roman", FontWeight.BOLD, 48 );
         gc.setFont( theFont );
-        gc.fillText( logo, 60, 50 );
-        gc.strokeText( logo, 60, 50 );
+        gc.fillText( "logo", 60, 50 );
+        gc.strokeText( "logo", 60, 50 );
 
-        Image logo = new Image("/FXTtest/src/main/java/jonst/logo.png");
+        Image logo = new Image("file:src/main/java/jonst/logo.png");    //Note annoying path. Can be amended with a URL string, maybe.
         gc.drawImage(logo, 180,100);
 
         myStage.show();     //This initiates the window
