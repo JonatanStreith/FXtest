@@ -17,6 +17,7 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Scanner;
 
 /**
@@ -62,6 +63,7 @@ public class App extends Application {
 
         Canvas canvas = new Canvas(800, 600);       //Canvas object to draw on
         firstDisplay.getChildren().add(canvas);     //Adds the canvas to firstDisplay, apparently. We can still use the canvas name to reach it.
+        GraphicsContext gc = canvas.getGraphicsContext2D(); //Not a new object; instead snags the canvas object's graphical details and binds it to the name "gc".
 
 
 
@@ -96,14 +98,13 @@ public class App extends Application {
 
 
 
-        GraphicsContext gc = canvas.getGraphicsContext2D(); //Not a new object; instead snags the canvas object's graphical details and binds it to the name "gc".
 
 
-        gc.setFill(Color.BLUE);
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(2);
-        Font theFont = Font.font("Times New Roman", FontWeight.BOLD, 48);
-        gc.setFont(theFont);
+//        gc.setFill(Color.BLUE);
+//        gc.setStroke(Color.BLACK);
+//        gc.setLineWidth(2);
+//        Font theFont = Font.font("Times New Roman", FontWeight.BOLD, 48);
+//        gc.setFont(theFont);
         //gc.strokeText( "logo", 70, 60 );
         //gc.fillText( "logo", 60, 50 );
 
@@ -118,8 +119,31 @@ public class App extends Application {
 
         Image ball = new Image("file:src/main/java/jonst/ball.jpg");
 
-        Image smiley = new Image("file:src/main/java/jonst/smiley.jpg", 50, 50, true, true);
+        //Image smiley = new Image("file:src/main/java/jonst/smiley.jpg", 50, 50, true, true);
 
+
+        //-------------------- Create sprites --- make this a separate method later? -----------------------------
+        Player smiley = new Player();
+        smiley.setImage("file:src/main/java/jonst/smiley.jpg");
+        smiley.setPosition(200, 0);
+
+        ArrayList<Apple> appleList = new ArrayList<Apple>();
+
+        for (int i = 0; i < 15; i++)
+        {
+            Apple apple = new Apple();
+            apple.setImage("file:src/main/java/jonst/apple.png");
+            double px = 350 * Math.random() + 50;
+            double py = 350 * Math.random() + 50;
+            apple.setVelocityX(200 * Math.random() - 100);
+            apple.setVelocityY(200 * Math.random() - 100);
+            apple.setPosition(px,py);
+            appleList.add( apple );
+        }
+
+        //-----------------------------------------------------------------------
+
+        LongValue lastNanoTime = new LongValue(System.nanoTime());
 
 
         new AnimationTimer() {                           //This creates
@@ -141,44 +165,59 @@ public class App extends Application {
 
             public void handle(long currentNanoTime) {
 
-                gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
 
 
                 //gc.strokeText("Wow!", Math.random() * canvas.getWidth(), Math.random() * canvas.getHeight());   //Draw the word "Wow!" at random locations
 
+                double elapsedTime = (currentNanoTime - lastNanoTime.value) / 1000000000.0;
+                lastNanoTime.value = currentNanoTime;
 
+                smiley.setVelocity(0,0);
                 if (input.contains("LEFT"))
-                    smileyX-= 5;
+                    smiley.setVelocityX(-100);
                 if (input.contains("RIGHT"))
-                    smileyX+= 5;
+                    smiley.setVelocityX(100);
                 if (input.contains("UP"))
-                    smileyY-= 5;
+                    smiley.setVelocityY(-100);
                 if (input.contains("DOWN"))
-                    smileyY+= 5;
+                    smiley.setVelocityY(100);
 
-                //double t = (currentNanoTime - startNanoTime) / 100_000_000.0;
 
-                ballX += xDirection * speed;
-                ballY += yDirection * speed;
 
-                if (ballX > canvas.getWidth() - ball.getWidth()) {
-                    xDirection = -1;
-                }
-                if (ballX < 0) {
-                    xDirection = 1;
-                }
-
-                if (ballY > canvas.getHeight() - ball.getHeight()) {
-                    yDirection = -1;
-                }
-                if (ballY < 0) {
-                    yDirection = 1;
+                Iterator<Apple> appleIter = appleList.iterator();
+                while ( appleIter.hasNext() )
+                {
+                    Sprite apple = appleIter.next();
+                    if ( apple.intersects(smiley) )
+                    {
+                        appleIter.remove();
+                    }
                 }
 
-                gc.drawImage(ball, ballX, ballY);
-                gc.drawImage(smiley, smileyX, smileyY);
 
 
+
+
+
+
+                // render
+
+                gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+
+
+                for (Apple apple: appleList) {
+                    apple.checkWallCollision(canvas.getWidth(), canvas.getHeight());
+                    apple.update(elapsedTime);
+                    apple.render(gc);
+                }
+
+                smiley.checkWallCollision(canvas.getWidth(), canvas.getHeight());
+                smiley.update(elapsedTime);
+                smiley.render(gc);
+
+                //gc.drawImage(ball, ballX, ballY);
                 //System.out.println(ballX+", "+ ballY);
 
             }
@@ -187,6 +226,8 @@ public class App extends Application {
 
         myStage.show();     //This initiates the window
     }
+
+
 
 
 }

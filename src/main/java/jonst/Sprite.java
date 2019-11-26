@@ -8,10 +8,10 @@ import javafx.geometry.Rectangle2D;
 public class Sprite
 {
     private Image image;
-    private double positionX;
-    private double positionY;
-    private double velocityX;
-    private double velocityY;
+    protected double positionX;
+    protected double positionY;
+    protected double velocityX;
+    protected double velocityY;
     private double width;
     private double height;
 
@@ -48,6 +48,17 @@ public class Sprite
         velocityY = y;
     }
 
+    public void setVelocityX(double x)
+    {
+        velocityX = x;
+    }
+
+    public void setVelocityY(double y)
+    {
+        velocityY = y;
+    }
+
+
     public void addVelocity(double x, double y)
     {
         velocityX += x;
@@ -58,6 +69,9 @@ public class Sprite
     {
         positionX += velocityX * time;
         positionY += velocityY * time;
+
+
+
     }
 
     public void render(GraphicsContext gc)
@@ -80,4 +94,6 @@ public class Sprite
         return " Position: [" + positionX + "," + positionY + "]"
                 + " Velocity: [" + velocityX + "," + velocityY + "]";
     }
+
+
 }
