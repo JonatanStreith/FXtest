@@ -11,10 +11,12 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -61,29 +63,32 @@ public class App extends Application {
         Canvas canvas = new Canvas(800, 600);       //Canvas object to draw on
         firstDisplay.getChildren().add(canvas);     //Adds the canvas to firstDisplay, apparently. We can still use the canvas name to reach it.
 
-        double[] smileyX = {50};
-        double[] smileyY = {50};
+
 
 
         //Event handling!
-        firstScene.setOnKeyPressed(
-                new EventHandler<KeyEvent>() {
-                    public void handle(KeyEvent e) {
-                        ;   //Read key pressed
+        ArrayList<String> input = new ArrayList<String>();
 
-                        if (e.getCode().equals(KeyCode.RIGHT)) {
-                            smileyX[0] += 10;
-                        }
-                        if (e.getCode().equals(KeyCode.LEFT)) {
-                            smileyX[0] -= 10;
-                        }
-                        if (e.getCode().equals(KeyCode.UP)) {
-                            smileyY[0] -= 10;
-                        }
-                        if (e.getCode().equals(KeyCode.DOWN)) {
-                            smileyY[0] += 10;
-                        }
+        firstScene.setOnKeyPressed(             //Pretty clever! It keeps a list of all keys that are pressed at the moment!
+                new EventHandler<KeyEvent>()
+                {
+                    public void handle(KeyEvent e)
+                    {
+                        String code = e.getCode().toString();
 
+                        // only add once... prevent duplicates
+                        if ( !input.contains(code) )
+                            input.add( code );
+                    }
+                });
+
+        firstScene.setOnKeyReleased(
+                new EventHandler<KeyEvent>()
+                {
+                    public void handle(KeyEvent e)
+                    {
+                        String code = e.getCode().toString();
+                        input.remove( code );
                     }
                 });
 
@@ -116,6 +121,7 @@ public class App extends Application {
         Image smiley = new Image("file:src/main/java/jonst/smiley.jpg", 50, 50, true, true);
 
 
+
         new AnimationTimer() {                           //This creates
 
 
@@ -130,14 +136,25 @@ public class App extends Application {
 
             double speed = 5;
 
+            double smileyX = 50;
+            double smileyY = 50;
 
             public void handle(long currentNanoTime) {
 
                 gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
 
-                gc.strokeText("Wow!", Math.random() * canvas.getWidth(), Math.random() * canvas.getHeight());   //Draw the word "Wow!" at random locations
+                //gc.strokeText("Wow!", Math.random() * canvas.getWidth(), Math.random() * canvas.getHeight());   //Draw the word "Wow!" at random locations
 
+
+                if (input.contains("LEFT"))
+                    smileyX-= 5;
+                if (input.contains("RIGHT"))
+                    smileyX+= 5;
+                if (input.contains("UP"))
+                    smileyY-= 5;
+                if (input.contains("DOWN"))
+                    smileyY+= 5;
 
                 //double t = (currentNanoTime - startNanoTime) / 100_000_000.0;
 
@@ -159,7 +176,7 @@ public class App extends Application {
                 }
 
                 gc.drawImage(ball, ballX, ballY);
-                gc.drawImage(smiley, smileyX[0], smileyY[0]);
+                gc.drawImage(smiley, smileyX, smileyY);
 
 
                 //System.out.println(ballX+", "+ ballY);
