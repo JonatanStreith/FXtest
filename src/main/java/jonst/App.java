@@ -175,13 +175,13 @@ public class App extends Application {
 
                 smiley.setVelocity(0,0);
                 if (input.contains("LEFT"))
-                    smiley.setVelocityX(-100);
+                    smiley.setVelocityX(-200);
                 if (input.contains("RIGHT"))
-                    smiley.setVelocityX(100);
+                    smiley.setVelocityX(200);
                 if (input.contains("UP"))
-                    smiley.setVelocityY(-100);
+                    smiley.setVelocityY(-200);
                 if (input.contains("DOWN"))
-                    smiley.setVelocityY(100);
+                    smiley.setVelocityY(200);
 
 
 
